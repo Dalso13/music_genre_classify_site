@@ -1,0 +1,68 @@
+{% load django_bootstrap5 %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    {%  block extra-style %}{% endblock %}
+</head>
+<body>
+<div class="container">
+    <header class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
+        <a href="/" class="d-flex align-items-center col-md-3 mb-2 mb-md-0 text-dark text-decoration-none">
+            음악 장르 분류
+        </a>
+    </header>
+    {% bootstrap_messages %}
+    {% block content %}
+    <form action="audio/" method="post" id="form" enctype="multipart/form-data">
+        <h3>음악 파일 업로드</h3>
+        <div class="input-group mb-3">
+            <input type="file" class="form-control" id="file" accept=".wav,.mp3" name="file">
+            <label class="input-group-text" for="file">Upload</label>
+        </div>
+    </form>
+    <input type="button" id="button" value="보내기"/>
+    <hr/>
+    <div>
+        <h5>분석된 장르 결과</h5>
+        <div id="result"></div>
+    </div>
+    {% endblock %}
+</div>
+{%  block extra-script %}{% endblock %}
+</body>
+<script type="application/javascript">
+    const form = document.getElementById("form")
+    const button = document.getElementById("button")
+    const result_doc = document.getElementById("result")
+
+    let result = ""
+
+    button.onclick = () => {
+        const form_data = new FormData(form)
+
+        fetch('audio/', {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": "{{csrf_token}}"
+            },
+            body: form_data
+        }).then((response) => {
+            if (response.ok) {
+                return response.text()
+            } else {
+                return "서버 오류 다시 시도 바람"
+            }
+        }).then((data) => result = data)
+            .then(() => result_doc.innerHTML = result)
+
+    }
+
+</script>
+</html>

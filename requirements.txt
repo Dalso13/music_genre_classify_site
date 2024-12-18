@@ -1,0 +1,4 @@
+django~=4.1.0
+django-bootstrap5
+requests
+python-dotenv

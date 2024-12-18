@@ -1,0 +1,4 @@
+__init__
+.env
+.sqlite3
+venv
