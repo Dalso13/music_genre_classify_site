@@ -38,14 +38,19 @@
 {%  block extra-script %}{% endblock %}
 </body>
 <script type="application/javascript">
-    const form = document.getElementById("form")
-    const button = document.getElementById("button")
-    const result_doc = document.getElementById("result")
+    const form = document.getElementById("form");
+    const button = document.getElementById("button");
+    const result_doc = document.getElementById("result");
 
-    let result = ""
+    let result = "";
+    let loading = false;
 
     button.onclick = () => {
-        const form_data = new FormData(form)
+        if (loading) {
+            return;
+        }
+        loading = true;
+        const form_data = new FormData(form);
 
         fetch('audio/', {
             method: "POST",
@@ -55,12 +60,15 @@
             body: form_data
         }).then((response) => {
             if (response.ok) {
-                return response.text()
+                return response.json();
             } else {
-                return "서버 오류 다시 시도 바람"
+                return "서버 오류 다시 시도 바람";
             }
         }).then((data) => result = data)
-            .then(() => result_doc.innerHTML = result)
+            .then(() => {
+                loading = false;
+                result_doc.innerHTML = result['genre']
+            });
 
     }
 
